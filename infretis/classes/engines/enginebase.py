@@ -656,7 +656,15 @@ class EngineBase(metaclass=ABCMeta):
         ### probably need a check that we have rgen.. and move this
         ### somewhere maybe.
         if hasattr(self, "rgen"):  # TODO: Not a good solution:
-            vel = self.rgen.normal(loc=0.0, scale=sigma_v, size=(npart, dim))
+            ### --- Slice only the mobile atoms (two bottom layers), HH ---
+            n_con = 18
+            free_mass = mass[n_con:]
+            free_sigma = sigma_v[n_con:]
+            v_free = self.rgen.normal(loc=0.0, scale=free_sigma[:, None], size=(npart - n_con, dim))
+
+            ### --- Pad constrained atoms with zeros and concatenate, HH ---
+            v_con = np.zeros((n_con, dim))
+            vel = np.vstack((v_con, v_free))
         else:
             raise ValueError("Did not find random generator!!")
         return vel, sigma_v
