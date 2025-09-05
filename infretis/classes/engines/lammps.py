@@ -55,7 +55,7 @@ def write_lammpstrj(
     with open(outfile, filemode) as writefile:
         to_write = (
             f"ITEM: TIMESTEP\n0\nITEM: NUMBER OF ATOMS\n{pos.shape[0]}\n\
-ITEM: BOX BOUNDS pp pp pp\n"
+ITEM: BOX BOUNDS xy xz yz pp pp ff\n" 
             ""
         )
 
@@ -630,7 +630,8 @@ class LAMMPSEngine(EngineBase):
         kin_old = kinetic_energy(vel, mass)[0]
         vel, _ = self.draw_maxwellian_velocities(vel, mass, self.beta)
         # convert to correct units
-        vel /= scale
+        vel /= scale # Unit is Å/fs
+        vel *= 1000 # Unit is Å/ps
         # reset momentum is not the default in LAMMPS
         if vel_settings.get("zero_momentum", False):
             vel = reset_momentum(vel, mass)
