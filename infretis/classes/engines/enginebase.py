@@ -658,10 +658,10 @@ class EngineBase(metaclass=ABCMeta):
         if hasattr(self, "rgen"):  # TODO: Not a good solution:
             ### --- Slice only the mobile atoms (two bottom layers), HH ---
             n_con = 18
+            n_free = npart - n_con
             free_mass = mass[n_con:]
             free_sigma = sigma_v[n_con:]
-            v_free = self.rgen.normal(loc=0.0, scale=free_sigma[:, None], size=(npart - n_con, dim))
-
+            v_free = self.rgen.normal(loc=0.0, scale=free_sigma, size=(npart - n_con, dim))
             ### --- Pad constrained atoms with zeros and concatenate, HH ---
             v_con = np.zeros((n_con, dim))
             vel = np.vstack((v_con, v_free))
